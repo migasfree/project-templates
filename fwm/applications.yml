@@ -1,0 +1,27 @@
+applications:
+- name: gimp-inicial
+  description: '**GIMP** (GNU Image Manipulation Program) is a free and open-source
+    image editing software used for tasks such as photo retouching, image composition,
+    and graphic design. It offers powerful tools and features similar to professional
+    software, making it suitable for beginners and advanced users alike.'
+  score: 3
+  icon: catalog_icons/app_1.png
+  level: U
+  category: Graphics
+  packages_to_install:
+  - gimp
+  available_for_attributes:
+  - SET-All Systems
+- name: VSCodium
+  description: '**Codium** is a lightweight, open-source code editor based on Visual
+    Studio Code, designed for developers seeking a streamlined experience. It offers
+    robust support for extensions, multiple programming languages, and cross-platform
+    functionality, without Microsoft''s proprietary telemetry features.'
+  score: 4
+  icon: catalog_icons/app_2.png
+  level: A
+  category: Developers Tools
+  packages_to_install:
+  - codium
+  available_for_attributes:
+  - SET-All Systems

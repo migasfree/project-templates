@@ -1,0 +1,35 @@
+partitions:
+  - number: 1
+    name: "EFI"
+    size: 512
+    type: "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
+    filesystem: "vfat"
+    mount: "/boot/efi"
+
+  - number: 2
+    name: "BIOS"
+    size: 1
+    type: "21686148-6449-6E6F-744E-656564454649"
+    filesystem: null
+    mount: "none"
+
+  - number: 3
+    name: "SWAP"
+    size: 2048
+    type: "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F"
+    filesystem: "swap"
+    mount: "none"
+
+  - number: 4
+    name: "SYSTEM"
+    size: 20480
+    type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+    filesystem: "ext4"
+    mount: "/"
+
+  - number: 5
+    name: "HOME"
+    size: 0  # 0 means use the rest of the disk
+    type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4"
+    filesystem: "ext4"
+    mount: "/home"

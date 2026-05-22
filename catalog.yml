@@ -1,0 +1,3 @@
+templates:
+- id: fwm
+  base_os: debian:13.4

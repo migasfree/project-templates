@@ -1,0 +1,67 @@
+deployments:
+- name: BASE
+  enabled: true
+  base_url: http://ftp.debian.org/debian/
+  suite: trixie
+  components: main contrib non-free non-free-firmware
+  options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
+  frozen: false
+  included_attributes:
+  - SET-All Systems
+  source: E
+- name: BACKPORTS
+  enabled: false
+  base_url: http://ftp.debian.org/debian/
+  suite: trixie-backports
+  components: main contrib non-free non-free-firmware
+  options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
+  frozen: false
+  included_attributes: []
+  source: E
+- name: SECURITY
+  enabled: true
+  base_url: http://deb.debian.org/debian-security/
+  suite: trixie-security
+  components: main contrib non-free non-free-firmware
+  options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
+  frozen: false
+  included_attributes:
+  - SET-All Systems
+  source: E
+- name: UPDATE
+  enabled: true
+  base_url: http://ftp.debian.org/debian/
+  suite: trixie-updates
+  components: main contrib non-free non-free-firmware
+  options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
+  frozen: false
+  included_attributes:
+  - SET-All Systems
+  source: E
+- name: migasfree
+  enabled: true
+  comment: Imported from migasfree-imports template
+  available_packages:
+  - migasfree-client
+  - migasfree-agent
+  - migasfree-play
+  packages_to_install:
+  - migasfree-agent
+  - migasfree-client
+  packages_to_remove: []
+  included_attributes:
+  - SET-All Systems
+  store: thirds
+  source: I
+- name: LXDE
+  enabled: true
+  comment: instala LXDE.
+  available_packages: []
+  packages_to_install:
+  - lightdm
+  - lxde-core
+  - xorg
+  packages_to_remove: []
+  included_attributes: []
+  store: thirds
+  source: I

@@ -1,0 +1,19 @@
+packages:
+- fullname: migasfree-agent_1.0.11_all.deb
+  name: migasfree-agent
+  version: 1.0.11
+  architecture: all
+  store: thirds
+  project_slug: lnx-1
+- fullname: migasfree-play_5.13.0_amd64.deb
+  name: migasfree-play
+  version: 5.13.0
+  architecture: amd64
+  store: thirds
+  project_slug: lnx-1
+- fullname: migasfree-client_5.0-1_all.deb
+  name: migasfree-client
+  version: 5.0-1
+  architecture: all
+  store: thirds
+  project_slug: lnx-1
