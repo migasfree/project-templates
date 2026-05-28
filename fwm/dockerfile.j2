@@ -1,8 +1,10 @@
-FROM {{ base_os }}
+ARG base_os="{{ base_os }}"
+FROM $base_os
 
 ARG CACHEBUST=1
 ENV DEBIAN_FRONTEND=noninteractive
 
+# 1. Prepare base structure and OS repositories
 RUN rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
     apt-get update && \
@@ -19,8 +21,9 @@ RUN rm -rf /var/lib/apt/lists/* && \
     zstd \
     pciutils
 
-COPY pool/install/ca-{{ server }}.crt /usr/local/share/ca-certificates/{{ server }}.crt
+COPY "pool/install/ca-{{ server }}.crt" "/usr/local/share/ca-certificates/{{ server }}.crt"
 
+# 2. Register the Migasfree repository and install the client
 RUN /usr/sbin/update-ca-certificates --fresh && \
     { \
     echo 'Types: deb'; \
@@ -32,14 +35,44 @@ RUN /usr/sbin/update-ca-certificates --fresh && \
     echo ''; \
     } > /etc/apt/sources.list.d/migasfree.sources && \
     apt-get update && \
-    apt-get install -y --no-install-recommends migasfree-client migasfree-agent && \
-    rm /etc/apt/sources.list.d/debian.sources
+    apt-get install -y --no-install-recommends migasfree-client migasfree-agent
 
-{% if fqdn_ip %}
+# {% if fqdn_ip %}
 RUN echo "{{ fqdn_ip }} {{ server }}" >> /etc/hosts && \
     cat /etc/hosts
-{% endif %}
+# {% endif %}
 
+# =========================================================================
+# PREVENTIVE STORAGE CONFIGURATION (INITRAMFS)
+# =========================================================================
+# We force the inclusion of generic drivers (MODULES=most) before the sync.
+# This ensures that when the virtual kernel is installed via Migasfree,
+# initramfs is forced to compile SCSI/VirtIO drivers.
+# =========================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    udev \
+    dbus \
+    efibootmgr \
+    openssh-server \
+    os-prober \
+    kmod \
+    parted \
+    e2fsprogs \
+    initramfs-tools
+
+RUN if [ -f /etc/initramfs-tools/initramfs.conf ]; then \
+    sed -i 's/MODULES=dep/MODULES=most/g' /etc/initramfs-tools/initramfs.conf; \
+    fi
+
+# GRUB bootloader configuration
+RUN echo "grub-pc grub-pc/install_devices_empty boolean true" | debconf-set-selections && \
+    echo "grub-pc grub-pc/install_devices string " | debconf-set-selections && \
+    apt-get install -y --no-install-recommends grub-common grub-pc-bin grub-efi-amd64-bin
+
+# =========================================================================
+# 3. Registration and dynamic injection of Migasfree tags
+# The {{ tags }} parameter will inject "KERNEL-VIRTUAL" or "KERNEL-PHYSICAL"
+# =========================================================================
 RUN apt-get install -y --no-install-recommends dmidecode && \
     mv /usr/sbin/dmidecode /usr/sbin/dmidecode.real && \
     echo '#!/bin/bash' > /usr/sbin/dmidecode && \
@@ -49,46 +82,13 @@ RUN apt-get install -y --no-install-recommends dmidecode && \
     USER=root migasfree conf --server {{ server }} --project {{ project_name }} --computer-name mci-builder && \
     echo "y" | USER=root migasfree register && \
     USER=root migasfree tags --communicate {{ tags }} && \
+    mkdir -p /etc/fonts && touch /etc/fonts/fonts.conf && \
     USER=root migasfree sync && \
     echo "{{ tags }}" > /etc/migasfree.image.tags && \
     apt-get clean && \
     apt-get update
 
-
-RUN . /etc/os-release && \
-    case "$ID" in \
-    ubuntu) KERNEL_PKG="linux-generic" ;; \
-    debian) KERNEL_PKG="linux-image-amd64" ;; \
-    *)      KERNEL_PKG="linux-image-generic" ;; \
-    esac && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends "$KERNEL_PKG"
-
-
-# System utilities for hardware discovery, disk management and boot support
-RUN apt-get install -y --no-install-recommends \
-    udev \
-    dbus \
-    efibootmgr \
-    openssh-server \
-    os-prober \
-    kmod \
-    console-setup \
-    console-data \
-    kbd \
-    parted \
-    nano \
-    bzip2 \
-    e2fsprogs \
-    iputils-ping 
-
-
-RUN echo "grub-pc grub-pc/install_devices_empty boolean true" | debconf-set-selections && \
-    echo "grub-pc grub-pc/install_devices string " | debconf-set-selections && \
-    apt-get install -y --no-install-recommends grub-common grub-pc-bin grub-efi-amd64-bin && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
+# Localization, users, wired network, and final footprint cleanup
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
@@ -97,7 +97,7 @@ RUN echo "LANG=en_US.UTF-8" > /etc/default/locale
 
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
-ENV TZ={{ timezone }}
+ENV TZ="{{ timezone }}"
 
 RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
@@ -108,16 +108,9 @@ RUN install -d -m 0755 /etc/{{ prefix }} && \
 RUN mkdir -p /etc/systemd/network && \
     echo "[Match]\nName=en* eth*\n\n[Network]\nDHCP=yes" > /etc/systemd/network/20-wired.network
 
-RUN mkdir -p /etc/systemd/resolved.conf.d && \
-    echo "[Resolve]\nFallbackDNS=8.8.8.8 1.1.1.1" > /etc/systemd/resolved.conf.d/fallback.conf
-
 RUN systemctl enable systemd-networkd.service 2>/dev/null; \
     systemctl enable systemd-resolved.service 2>/dev/null; \
     exit 0
-
-RUN printf 'XKBMODEL="{{ keyboard_model }}"\nXKBLAYOUT="{{ keymap }}"\nXKBVARIANT=""\nXKBOPTIONS=""\nBACKSPACE="guess"\n' > /etc/default/keyboard && \
-    printf 'ACTIVE_CONSOLES="/dev/tty[1-6]"\nCHARMAP="{{ charmap }}"\nCODESET="{{ codeset }}"\nFONTFACE="Fixed"\nFONTSIZE="16"\n' > /etc/default/console-setup && \
-    setupcon --save-only
 
 RUN adduser --disabled-password --gecos "" {{ user }} && \
     echo "{{ user }}:{{ password }}" | chpasswd && \
@@ -126,9 +119,10 @@ RUN adduser --disabled-password --gecos "" {{ user }} && \
     chown {{ user }}:{{ user }} /home/{{ user }} && \
     chmod 700 /home/{{ user }}
 
-# Clean up migasfree-client 
-RUN USER=root migasfree conf --server {{ server }} --project {{ project_name }} --computer-name "" && \
+# Clean up Migasfree client configuration, remove local state, restore original dmidecode, and remove Debian sources
+RUN USER=root migasfree conf --computer-name "" && \
     rm -rf /var/migasfree-client && \
-    mv /usr/sbin/dmidecode.real /usr/sbin/dmidecode
+    mv /usr/sbin/dmidecode.real /usr/sbin/dmidecode && \
+    rm -f /etc/apt/sources.list.d/debian.sources
 
 CMD ["/sbin/init"]

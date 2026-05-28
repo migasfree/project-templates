@@ -8,6 +8,7 @@ deployments:
   frozen: false
   included_attributes:
   - SET-All Systems
+  excluded_attributes: []
   source: E
 - name: BACKPORTS
   enabled: false
@@ -17,6 +18,7 @@ deployments:
   options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
   frozen: false
   included_attributes: []
+  excluded_attributes: []
   source: E
 - name: SECURITY
   enabled: true
@@ -27,6 +29,7 @@ deployments:
   frozen: false
   included_attributes:
   - SET-All Systems
+  excluded_attributes: []
   source: E
 - name: UPDATE
   enabled: true
@@ -37,20 +40,22 @@ deployments:
   frozen: false
   included_attributes:
   - SET-All Systems
+  excluded_attributes: []
   source: E
-- name: migasfree
+- name: MIGASFREE
   enabled: true
   comment: Imported from migasfree-imports template
   available_packages:
   - migasfree-client
-  - migasfree-agent
   - migasfree-play
+  - migasfree-agent
   packages_to_install:
   - migasfree-agent
   - migasfree-client
   packages_to_remove: []
   included_attributes:
   - SET-All Systems
+  excluded_attributes: []
   store: thirds
   source: I
 - name: LXDE
@@ -61,7 +66,39 @@ deployments:
   - lightdm
   - lxde-core
   - xorg
+  - migasfree-play
   packages_to_remove: []
-  included_attributes: []
+  included_attributes:
+  - FLV-LXDE
+  excluded_attributes: []
+  store: thirds
+  source: I
+- name: KERNEL-GENERIC
+  enabled: true
+  comment: Kernel for Physical Hardware
+  available_packages: []
+  packages_to_install:
+  - linux-image-amd64
+  packages_to_remove: []
+  included_attributes:
+  - SET-All Systems
+  excluded_attributes:
+  - FLV-VIRTUAL
+  store: thirds
+  source: I
+- name: KERNEL-VIRTUAL
+  enabled: true
+  comment: Kernel and tools for virtualizacion  (Proxmox, VMware, vSphere, Azure)
+  available_packages: []
+  packages_to_install:
+  - cloud-guest-utils
+  - cloud-init
+  - linux-image-cloud-amd64
+  - open-vm-tools
+  - qemu-guest-agent
+  packages_to_remove: []
+  included_attributes:
+  - FLV-VIRTUAL
+  excluded_attributes: []
   store: thirds
   source: I

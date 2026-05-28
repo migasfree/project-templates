@@ -1,3 +1,7 @@
 templates:
 - id: fwm
   base_os: debian:13.4
+  platform: Linux
+  pms: apt
+  architecture: amd64
+  auto_register_computers: true
