@@ -21,13 +21,13 @@ RUN rm -rf /var/lib/apt/lists/* && \
     zstd \
     pciutils
 
-COPY "pool/install/ca-{{ server }}.crt" "/usr/local/share/ca-certificates/{{ server }}.crt"
+COPY "pool/install/ca-{{ server }}.crt" "/usr/local/share/ca-certificates/"
 
 # 2. Register the Migasfree repository and install the client
 RUN /usr/sbin/update-ca-certificates --fresh && \
     { \
     echo 'Types: deb'; \
-    echo 'URIs: https://{{ server }}/public/lnx-1/repos/'; \
+    echo 'URIs: https://{{ server }}/public/{{ project_slug }}/repos/'; \
     echo 'Suites: migasfree'; \
     echo 'Components: PKGS'; \
     echo 'Signed-By: /etc/apt/trusted.gpg.d/{{ server }}.gpg'; \
