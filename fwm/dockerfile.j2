@@ -21,7 +21,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
     zstd \
     pciutils
 
-COPY "pool/install/ca-{{ server }}.crt" "/usr/local/share/ca-certificates/"
+COPY pool/install/ca-{{ server }}.crt /usr/local/share/ca-certificates/
 
 # 2. Register the Migasfree repository and install the client
 RUN /usr/sbin/update-ca-certificates --fresh && \
