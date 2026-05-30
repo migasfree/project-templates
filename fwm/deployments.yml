@@ -102,3 +102,29 @@ deployments:
   excluded_attributes: []
   store: thirds
   source: I
+properties:
+- prefix: FLV
+  name: FLAVOURS
+  enabled: false
+  kind: N
+  sort: server
+  auto_add: true
+  language: 0
+  code: ''
+  attributes:
+  - value: LXDE
+    description: 'LXDE: Lightweight X11 Desktop Environment'
+  - value: VIRTUAL
+    description: KERNEL for virtualization (qemu,kvm, proxmox,vsphere, azure, aws,
+      ....)
+- prefix: SET
+  name: Attribute Set
+  enabled: true
+  kind: N
+  sort: basic
+  auto_add: true
+  language: 1
+  code: print 'All Systems'
+  attributes:
+  - value: All Systems
+    description: All Systems Set Description
