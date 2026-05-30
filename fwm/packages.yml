@@ -9,8 +9,8 @@ packages:
   version: 5.0-1
   architecture: all
   store: thirds
-- fullname: migasfree-agent_1.2.0_all.deb
+- fullname: migasfree-agent_1.3.0_all.deb
   name: migasfree-agent
-  version: 1.2.0
+  version: 1.3.0
   architecture: all
   store: thirds
