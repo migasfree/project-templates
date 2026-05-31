@@ -102,8 +102,28 @@ ENV TZ="{{ timezone }}"
 RUN ln -fs /usr/share/zoneinfo/{{ timezone }} /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
 
-RUN install -d -m 0755 /etc/{{ prefix }} && \
-    echo '{"server":"{{ server }}","project":"{{ project_slug }}","project_name":"{{ project_name }}","prefix":"{{ prefix }}"}' > /etc/{{ prefix }}/project.json
+RUN apt-get install -y --no-install-recommends keyboard-configuration console-setup && \
+    echo "XKBMODEL=\"{{ keyboard_model }}\"" > /etc/default/keyboard && \
+    echo "XKBLAYOUT=\"{{ keymap }}\"" >> /etc/default/keyboard && \
+    echo "XKBVARIANT=\"\"" >> /etc/default/keyboard && \
+    echo "XKBOPTIONS=\"\"" >> /etc/default/keyboard && \
+    echo "BACKSPACE=\"guess\"" >> /etc/default/keyboard && \
+    sed -i 's/^CODESET=.*/CODESET="{{ codeset }}"/g' /etc/default/console-setup && \
+    sed -i 's/^CHARMAP=.*/CHARMAP="{{ charmap }}"/g' /etc/default/console-setup && \
+    dpkg-reconfigure -f noninteractive keyboard-configuration console-setup
+
+RUN cat <<EOF > /etc/migasfree-golden-image.json
+{
+  "server": "{{ server }}",
+  "project_slug": "{{ project_slug }}",
+  "project_name": "{{ project_name }}",
+  "flavour": "{{ flavour_name }}",
+  "release": "{{ release_name }}",
+  "base_os": "{{ base_os }}",
+  "build_date": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+  "tags": "{{ tags }}"
+}
+EOF
 
 RUN mkdir -p /etc/systemd/network && \
     echo "[Match]\nName=en* eth*\n\n[Network]\nDHCP=yes" > /etc/systemd/network/20-wired.network
