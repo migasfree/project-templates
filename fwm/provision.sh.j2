@@ -1,0 +1,27 @@
+#!/bin/bash
+# --- MCS Variables ---
+# variables:
+#   hostname:
+#     label: "Hostname"
+#     default: ""
+#     required: true
+# ---
+
+# 1. Update /etc/hostname with the custom hostname provided by the user
+echo "{{ hostname }}" > /etc/hostname
+
+# 2. Update the loopback address mapping in /etc/hosts
+if [ -f /etc/hosts ]; then
+    # Replace the local resolution line (127.0.1.1) with the new hostname
+    sed -i "s/127.0.1.1.*/127.0.1.1 {{ hostname }}/" /etc/hosts
+fi
+
+echo "Provisioning completed: Hostname successfully changed to {{ hostname }}"
+
+
+
+
+# Ensure the removal of pre-generated SSH keys during the build
+rm -f /etc/ssh/ssh_host_*_key*
+ssh-keygen -A
+echo "Regenerated SSH keys"
