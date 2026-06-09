@@ -11,7 +11,9 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt-get dist-upgrade -y && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
+    curl \
     gpg \
+    jq \
     procps \
     iproute2 \
     locales \
@@ -21,26 +23,27 @@ RUN rm -rf /var/lib/apt/lists/* && \
     zstd \
     pciutils
 
-COPY pool/install/ca-{{ server }}.crt /usr/local/share/ca-certificates/
 
-# 2. Register the Migasfree repository and install the client
-RUN /usr/sbin/update-ca-certificates --fresh && \
-    { \
+# CA certificate
+RUN curl -k -X GET https://{{ server }}/manager/v1/public/ca -o /usr/local/share/ca-certificates/ca-{{ server }}.crt && \
+    /sbin/update-ca-certificates --fresh
+
+# Key Repositories
+RUN curl -sSL -X POST https://{{ server }}/api/v1/public/keys/repositories/ | jq -r '.' | gpg --dearmor -o /etc/apt/trusted.gpg.d/{{ server }}.gpg
+
+
+RUN { \
     echo 'Types: deb'; \
     echo 'URIs: https://{{ server }}/public/{{ project_slug }}/repos/'; \
     echo 'Suites: migasfree'; \
     echo 'Components: PKGS'; \
     echo 'Signed-By: /etc/apt/trusted.gpg.d/{{ server }}.gpg'; \
-    echo 'Trusted: yes'; \
     echo ''; \
-    } > /etc/apt/sources.list.d/migasfree.sources && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends migasfree-client migasfree-agent
+    } > /etc/apt/sources.list.d/migasfree.sources 
 
-# {% if fqdn_ip %}
-RUN echo "{{ fqdn_ip }} {{ server }}" >> /etc/hosts && \
-    cat /etc/hosts
-# {% endif %}
+RUN apt-get update  && \
+    apt-get install -y --no-install-recommends migasfree-client
+
 
 # =========================================================================
 # PREVENTIVE STORAGE CONFIGURATION (INITRAMFS)
