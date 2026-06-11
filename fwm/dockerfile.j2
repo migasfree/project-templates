@@ -29,8 +29,7 @@ RUN curl -k -X GET https://{{ server }}/manager/v1/public/ca -o /usr/local/share
     /sbin/update-ca-certificates --fresh
 
 # Key Repositories
-RUN curl -sSL -X POST https://{{ server }}/api/v1/public/keys/repositories/ | jq -r '.' | gpg --dearmor -o /etc/apt/trusted.gpg.d/{{ server }}.gpg
-
+RUN curl -sSL https://{{ server }}/api/v1/public/keys/repositories/ | jq -r '.public_key' | gpg --dearmor -o /etc/apt/trusted.gpg.d/{{ server }}.gpg
 
 RUN { \
     echo 'Types: deb'; \
