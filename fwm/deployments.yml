@@ -65,7 +65,6 @@ deployments:
   packages_to_install:
   - lightdm
   - lxde-core
-  - xorg
   - migasfree-play
   packages_to_remove: []
   included_attributes:
