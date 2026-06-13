@@ -1,0 +1,26 @@
+flavours:
+- name: workstation
+  description: ''
+  enabled: true
+  user: migasfree
+  password: migasfree
+  keymap: es
+  keyboard_model: pc105
+  charmap: UTF-8
+  codeset: guess
+  timezone: Europe/Madrid
+  hostname: workstation
+  tags:
+  - FLV-LXDE
+- name: server
+  description: ''
+  enabled: true
+  user: migasfree
+  password: migasfree
+  keymap: es
+  keyboard_model: pc105
+  charmap: UTF-8
+  codeset: guess
+  timezone: Europe/Madrid
+  hostname: server
+  tags: []
