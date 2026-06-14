@@ -69,9 +69,12 @@ deployments:
   source: I
 - name: LXDE
   enabled: true
-  comment: instala LXDE.
+  comment: install LXDE.
   available_packages: []
   packages_to_install:
+  - firefox-esr
+  - fonts-dejavu-core
+  - fonts-freefont-ttf
   - lightdm
   - lxde-core
   - migasfree-play
