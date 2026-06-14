@@ -1,5 +1,5 @@
 applications:
-- name: gimp-inicial
+- name: gimp
   description: '**GIMP** (GNU Image Manipulation Program) is a free and open-source
     image editing software used for tasks such as photo retouching, image composition,
     and graphic design. It offers powerful tools and features similar to professional
