@@ -6,6 +6,9 @@ deployments:
   components: main contrib non-free non-free-firmware
   options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
   frozen: false
+  packages_to_install:
+  - systemd-resolved
+  packages_to_remove: []
   included_attributes:
   - SET-All Systems
   excluded_attributes: []
@@ -17,6 +20,8 @@ deployments:
   components: main contrib non-free non-free-firmware
   options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
   frozen: false
+  packages_to_install: []
+  packages_to_remove: []
   included_attributes: []
   excluded_attributes: []
   source: E
@@ -27,6 +32,8 @@ deployments:
   components: main contrib non-free non-free-firmware
   options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
   frozen: false
+  packages_to_install: []
+  packages_to_remove: []
   included_attributes:
   - SET-All Systems
   excluded_attributes: []
@@ -38,6 +45,8 @@ deployments:
   components: main contrib non-free non-free-firmware
   options: '[ Signed-By=/usr/share/keyrings/debian-archive-keyring.gpg ]'
   frozen: false
+  packages_to_install: []
+  packages_to_remove: []
   included_attributes:
   - SET-All Systems
   excluded_attributes: []
