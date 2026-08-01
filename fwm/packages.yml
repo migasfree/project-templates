@@ -9,8 +9,8 @@ packages:
   version: 1.4.0
   architecture: all
   store: thirds
-- fullname: migasfree-play_5.13.0_amd64.deb
+- fullname: migasfree-play_5.14.0_amd64.deb
   name: migasfree-play
-  version: 5.13.0
+  version: 5.14.0
   architecture: amd64
   store: thirds
